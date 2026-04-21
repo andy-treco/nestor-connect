@@ -1,10 +1,9 @@
+# Utilisation de l'image de base Home Assistant (Alpine)
 ARG BUILD_FROM=ghcr.io/home-assistant/amd64-base:latest
 FROM ${BUILD_FROM}
 
-# Installation des dépendances (version Debian car ton exemple utilisait apt-get)
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    wget ca-certificates tar \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+# Installation des dépendances avec APK (le gestionnaire d'Alpine)
+RUN apk add --no-cache wget ca-certificates tar
 
 # Installation du binaire FRP (0.68.1)
 RUN arch=$(uname -m) && \
@@ -16,12 +15,10 @@ RUN arch=$(uname -m) && \
     mv frp_0.68.1_linux_${FRP_ARCH}/frpc /usr/bin/ && \
     rm -rf frp_0.68.1_linux_${FRP_ARCH}*
 
-# On copie tout le contenu de ton dossier rootfs local vers la racine du conteneur
+# Copie de ta structure rootfs
 COPY rootfs/ /
 
-# On rend le script exécutable (en utilisant TON nom de dossier)
-# Et on nettoie les caractères Windows (\r) au cas où
+# On rend le script de service exécutable
+# sed est utilisé pour garantir le format de fin de ligne Linux (LF)
 RUN chmod a+x /etc/services.d/nestor-connect/run \
     && sed -i 's/\r$//' /etc/services.d/nestor-connect/run
-
-# Pas d'ENTRYPOINT, le superviseur HA s'occupe de tout via /init
