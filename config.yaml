@@ -2,9 +2,12 @@ name: "Nestor Connect"
 version: "1.0.2"
 slug: "nestor_connect"
 description: "Tunnel sécurisé"
+url: "https://github.com/andy-treco/nestor-connect"
 arch:
   - aarch64
   - amd64
+startup: services
+boot: auto
 build_from:
   aarch64: "ghcr.io/home-assistant/aarch64-base:latest"
   amd64: "ghcr.io/home-assistant/amd64-base:latest"
