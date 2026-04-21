@@ -1,11 +1,8 @@
-# Utilisation de l'image de base Home Assistant (Alpine)
 ARG BUILD_FROM=ghcr.io/home-assistant/amd64-base:latest
 FROM ${BUILD_FROM}
 
-# Installation des dépendances avec APK (le gestionnaire d'Alpine)
 RUN apk add --no-cache wget ca-certificates tar
 
-# Installation du binaire FRP (0.68.1)
 RUN arch=$(uname -m) && \
     if [ "$arch" = "x86_64" ]; then FRP_ARCH="amd64"; \
     elif [ "$arch" = "aarch64" ]; then FRP_ARCH="arm64"; \
@@ -15,10 +12,12 @@ RUN arch=$(uname -m) && \
     mv frp_0.68.1_linux_${FRP_ARCH}/frpc /usr/bin/ && \
     rm -rf frp_0.68.1_linux_${FRP_ARCH}*
 
-# Copie de ta structure rootfs
 COPY rootfs/ /
 
-# On rend le script de service exécutable
-# sed est utilisé pour garantir le format de fin de ligne Linux (LF)
+# On rend le script exécutable
 RUN chmod a+x /etc/services.d/nestor-connect/run \
     && sed -i 's/\r$//' /etc/services.d/nestor-connect/run
+
+# --- LES DEUX LIGNES MAGIQUES POUR NETTOYER LE CACHE ---
+ENTRYPOINT []
+CMD []
