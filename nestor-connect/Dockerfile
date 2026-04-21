@@ -4,7 +4,7 @@ FROM $BUILD_FROM
 # Installation des dépendances
 RUN apk add --no-cache wget tar
 
-# Script d'installation du bon binaire FRP
+# Script d'installation du bon binaire FRP (Mis à jour en 0.68.1 comme demandé)
 RUN arch=$(uname -m) && \
     if [ "$arch" = "x86_64" ]; then FRP_ARCH="amd64"; \
     elif [ "$arch" = "aarch64" ]; then FRP_ARCH="arm64"; \
@@ -15,7 +15,9 @@ RUN arch=$(uname -m) && \
     rm -rf frp_0.68.1_linux_${FRP_ARCH}*
 
 # Copie du script de lancement
+# Note : On ne met plus de CMD ici pour laisser s6-overlay gérer le démarrage (PID 1)
 COPY run.sh /
 RUN chmod a+x /run.sh
 
-CMD [ "/run.sh" ]
+# On utilise le système de démarrage de Home Assistant
+ENTRYPOINT [ "/run.sh" ]
