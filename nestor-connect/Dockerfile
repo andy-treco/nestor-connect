@@ -2,7 +2,11 @@ ARG BUILD_FROM=ghcr.io/home-assistant/amd64-base-debian:bookworm
 FROM ${BUILD_FROM}
 
 # Installation des dépendances Alpine
-RUN apk add --no-cache wget ca-certificates tar
+RUN apt-get update && apt-get install -y \
+    wget \
+    ca-certificates \
+    tar \
+ && rm -rf /var/lib/apt/lists/*
 
 # Installation du binaire FRP (0.68.1)
 RUN arch=$(uname -m) && \
