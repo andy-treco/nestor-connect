@@ -1,10 +1,12 @@
-ARG BUILD_FROM=ghcr.io/home-assistant/amd64-base:latest
-FROM $BUILD_FROM
+ARG BUILD_FROM
+FROM ${BUILD_FROM}
 
-# Installation des dépendances
-RUN apk add --no-cache wget tar
+# Installation des dépendances (version Debian car ton exemple utilisait apt-get)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    wget ca-certificates tar \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Script d'installation du bon binaire FRP (Mis à jour en 0.68.1 comme demandé)
+# Installation du binaire FRP (0.68.1)
 RUN arch=$(uname -m) && \
     if [ "$arch" = "x86_64" ]; then FRP_ARCH="amd64"; \
     elif [ "$arch" = "aarch64" ]; then FRP_ARCH="arm64"; \
@@ -14,10 +16,12 @@ RUN arch=$(uname -m) && \
     mv frp_0.68.1_linux_${FRP_ARCH}/frpc /usr/bin/ && \
     rm -rf frp_0.68.1_linux_${FRP_ARCH}*
 
-# Copie du script de lancement
-# Note : On ne met plus de CMD ici pour laisser s6-overlay gérer le démarrage (PID 1)
-COPY run.sh /
-RUN chmod a+x /run.sh
+# On copie tout le contenu de ton dossier rootfs local vers la racine du conteneur
+COPY rootfs/ /
 
-# On utilise le système de démarrage de Home Assistant
-ENTRYPOINT [ "/run.sh" ]
+# On rend le script exécutable (en utilisant TON nom de dossier)
+# Et on nettoie les caractères Windows (\r) au cas où
+RUN chmod a+x /etc/services.d/nestor-connect/run \
+    && sed -i 's/\r$//' /etc/services.d/nestor-connect/run
+
+# Pas d'ENTRYPOINT, le superviseur HA s'occupe de tout via /init
