@@ -1,0 +1,18 @@
+name: "Nestor Connect"
+version: "1.0.0"
+slug: "nestor_connect"
+description: "Tunnel sécurisé vers le Cloud Nestor"
+arch:
+  - aarch64
+  - amd64
+  - armv7
+startup: services
+boot: auto
+options:
+  server_addr: ""
+  server_port: 7000
+  auth_token: ""
+schema:
+  server_addr: str
+  server_port: int
+  auth_token: str
