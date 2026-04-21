@@ -15,8 +15,7 @@ RUN arch=$(uname -m) && \
     rm -rf frp_0.68.1_linux_${FRP_ARCH}*
 
 # Copie de ta structure rootfs (qui contient /etc/services.d/nestor-connect/run)
-COPY rootfs/ /
+COPY run.sh /run.sh
 
 # On rend le script exécutable et on nettoie les fins de ligne
-RUN chmod a+x /etc/services.d/nestor-connect/run \
-    && sed -i 's/\r$//' /etc/services.d/nestor-connect/run
+RUN chmod +x /run.sh
