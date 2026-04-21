@@ -1,4 +1,4 @@
-#!/usr/bin/with-contenne-env bashio
+#!/usr/bin/with-contenu-env bashio
 
 # 1. Récupération des infos dynamiques
 BOX_ID=$(bashio::info.hostname)
